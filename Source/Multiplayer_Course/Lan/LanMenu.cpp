@@ -4,27 +4,33 @@
 #include "LanMenu.h"
 
 #include "Components/Button.h"
+#include "Components/EditableTextBox.h"
+#include "Kismet/GameplayStatics.h"
 
 void ULanMenu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	const FInputModeUIOnly InputMode;
-	GetOwningPlayer()->SetInputMode(InputMode);
-	GetOwningPlayer()->SetShowMouseCursor(true);
+	HandleInputMode(UIOnly);
 	
-	HostButton->OnClicked.AddDynamic(this, &ULanMenu::JoinButtonClicked);
-	JoinButton->OnClicked.AddDynamic(this, &ULanMenu::JoinButtonClicked);
+	Button_Host->OnClicked.AddDynamic(this, &ThisClass::HostButtonClicked);
+	Button_Join->OnClicked.AddDynamic(this, &ThisClass::JoinButtonClicked);
 }
 
 void ULanMenu::HostButtonClicked()
 {
-	HandleInputMode(UIOnly);
+	HandleInputMode(GameOnly);
+	
+	UGameplayStatics::OpenLevelBySoftObjectPtr(this, HostingLevel, true, TEXT("listen"));
 }
 
 void ULanMenu::JoinButtonClicked()
 {
 	HandleInputMode(GameOnly);
+	
+	const FString IpAddress = TextBox_IpAddress->GetText().ToString();
+	
+	UGameplayStatics::OpenLevel(this, *IpAddress);
 }
 
 void ULanMenu::HandleInputMode(const EInputMode InputMode) const

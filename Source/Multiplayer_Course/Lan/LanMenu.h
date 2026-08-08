@@ -22,7 +22,7 @@ class MULTIPLAYER_COURSE_API ULanMenu : public UUserWidget
 {
 	GENERATED_BODY()
 	
-public:
+protected:
 	virtual void NativeOnInitialized() override;
 	
 private:
@@ -30,10 +30,13 @@ private:
 	TObjectPtr<UEditableTextBox> TextBox_IpAddress;
 	
 	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<UButton> HostButton;
+	TObjectPtr<UButton> Button_Host;
 	
 	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<UButton> JoinButton;
+	TObjectPtr<UButton> Button_Join;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> HostingLevel;
 	
 	UFUNCTION()
 	void HostButtonClicked();
