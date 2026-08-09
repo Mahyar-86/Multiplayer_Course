@@ -5,6 +5,7 @@
 
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/MP_PlayerInteraction.h"
 
 
 AMP_Blade::AMP_Blade()
@@ -35,11 +36,14 @@ void AMP_Blade::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	if (HasAuthority())
+	if (!HasAuthority()) return;
+	
+	if (OtherActor->Implements<UMP_PlayerInteraction>())
 	{
-		if (const ACharacter* Character = Cast<ACharacter>(OtherActor))
-		{
-			AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "HandGrip_R");
-		}
+		USkeletalMeshComponent* Mesh = IMP_PlayerInteraction::Execute_GetPlayerMesh(OtherActor);
+			
+		AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "HandGrip_R");
+			
+		IMP_PlayerInteraction::Execute_GrantBladePower(OtherActor, Power);
 	}
 }

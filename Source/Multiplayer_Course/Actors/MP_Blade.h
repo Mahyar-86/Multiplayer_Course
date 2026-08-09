@@ -29,5 +29,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> BladeCollision;
 	
+	UPROPERTY(EditAnywhere)
+	float Power = 100;
 };
  

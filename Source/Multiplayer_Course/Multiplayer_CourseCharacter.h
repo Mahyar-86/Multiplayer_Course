@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/MP_PlayerInteraction.h"
 #include "Logging/LogMacros.h"
 #include "Multiplayer_CourseCharacter.generated.h"
 
@@ -19,7 +20,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
  *  Implements a controllable orbiting camera
  */
 UCLASS(abstract)
-class AMultiplayer_CourseCharacter : public ACharacter
+class AMultiplayer_CourseCharacter : public ACharacter, public IMP_PlayerInteraction
 {
 	GENERATED_BODY()
 
@@ -92,5 +93,27 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-};
+	
+	
+public:
+	
+	/** IMP_PlayerInteraction Implementations **/
+	virtual USkeletalMeshComponent* GetPlayerMesh_Implementation() const override;
+	virtual void GrantBladePower_Implementation(float Power) override;
+	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
+protected:
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* GeneralAction;
+	
+private:
+	
+	UPROPERTY(Replicated)
+	float BladePower;
+	
+	UFUNCTION()
+	void OnGeneralButtonPressed();
 
+};

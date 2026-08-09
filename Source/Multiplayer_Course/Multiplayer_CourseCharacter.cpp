@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Multiplayer_Course.h"
+#include "Net/UnrealNetwork.h"
 
 AMultiplayer_CourseCharacter::AMultiplayer_CourseCharacter()
 {
@@ -65,6 +66,8 @@ void AMultiplayer_CourseCharacter::SetupPlayerInputComponent(UInputComponent* Pl
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMultiplayer_CourseCharacter::Look);
+		
+		EnhancedInputComponent->BindAction(GeneralAction, ETriggerEvent::Triggered, this, &ThisClass::OnGeneralButtonPressed);
 	}
 	else
 	{
@@ -131,3 +134,28 @@ void AMultiplayer_CourseCharacter::DoJumpEnd()
 	// signal the character to stop jumping
 	StopJumping();
 }
+
+USkeletalMeshComponent* AMultiplayer_CourseCharacter::GetPlayerMesh_Implementation() const
+{
+	return GetMesh();
+}
+
+void AMultiplayer_CourseCharacter::GrantBladePower_Implementation(const float Power)
+{
+	BladePower = Power;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Blade Power Granted: %f"), BladePower));
+}
+
+void AMultiplayer_CourseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ThisClass, BladePower)
+}
+
+void AMultiplayer_CourseCharacter::OnGeneralButtonPressed()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Blade Power is: %f"), BladePower));
+}
+
+
