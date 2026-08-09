@@ -151,6 +151,12 @@ void AMultiplayer_CourseCharacter::GetLifetimeReplicatedProps(TArray<class FLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(ThisClass, BladePower)
+	DOREPLIFETIME(ThisClass, PickedUpItems)
+}
+
+void AMultiplayer_CourseCharacter::PlusPickedUp_Implementation()
+{
+	PickedUpItems++;
 }
 
 void AMultiplayer_CourseCharacter::OnGeneralButtonPressed()
@@ -158,4 +164,13 @@ void AMultiplayer_CourseCharacter::OnGeneralButtonPressed()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Blade Power is: %f"), BladePower));
 }
 
+void AMultiplayer_CourseCharacter::OnRep_BladePower()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Rep Notified Blade Power is: %f"), BladePower));
+}
 
+void AMultiplayer_CourseCharacter::OnRep_PickedUpItems(int32 PreviousValue)
+{
+	const FString Role = HasAuthority() ? TEXT("SERVER") : TEXT("CLIENT");
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("%s Picked Up! Total: From %d to %d"), *Role, PreviousValue, PickedUpItems));
+}

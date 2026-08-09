@@ -103,6 +103,8 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
+	virtual void PlusPickedUp_Implementation() override;
+	
 protected:
 	
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -110,10 +112,18 @@ protected:
 	
 private:
 	
-	UPROPERTY(Replicated)
-	float BladePower;
+	UPROPERTY(ReplicatedUsing = "OnRep_BladePower")
+	float BladePower = 0;
 	
 	UFUNCTION()
 	void OnGeneralButtonPressed();
-
+	
+	UFUNCTION()
+	void OnRep_BladePower();
+	
+	UPROPERTY(ReplicatedUsing = "OnRep_PickedUpItems")
+	int32 PickedUpItems = 0;
+	
+	UFUNCTION()
+	void OnRep_PickedUpItems(int32 PreviousValue);
 };

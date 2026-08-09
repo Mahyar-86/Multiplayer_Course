@@ -28,4 +28,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void GrantBladePower(float Power);
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void PlusPickedUp();
 };
