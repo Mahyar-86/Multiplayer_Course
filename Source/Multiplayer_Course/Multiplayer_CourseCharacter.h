@@ -103,6 +103,8 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
+	virtual void PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker) override;
+	
 	virtual void PlusPickedUp_Implementation() override;
 	
 protected:
@@ -126,4 +128,7 @@ private:
 	
 	UFUNCTION()
 	void OnRep_PickedUpItems(int32 PreviousValue);
+	
+	UPROPERTY()
+	bool bReplicatePickedUpItems = false;
 };

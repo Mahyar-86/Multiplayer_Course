@@ -150,8 +150,18 @@ void AMultiplayer_CourseCharacter::GetLifetimeReplicatedProps(TArray<class FLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME(ThisClass, BladePower)
-	DOREPLIFETIME(ThisClass, PickedUpItems)
+	//DOREPLIFETIME(ThisClass, BladePower)
+	//DOREPLIFETIME(ThisClass, PickedUpItems)
+	
+	DOREPLIFETIME_CONDITION(ThisClass,BladePower, COND_None)
+	DOREPLIFETIME_CONDITION(ThisClass, PickedUpItems, COND_Custom)
+}
+
+void AMultiplayer_CourseCharacter::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
+{
+	Super::PreReplication(ChangedPropertyTracker);
+	
+	DOREPLIFETIME_ACTIVE_OVERRIDE(ThisClass, PickedUpItems, bReplicatePickedUpItems);
 }
 
 void AMultiplayer_CourseCharacter::PlusPickedUp_Implementation()
@@ -162,6 +172,10 @@ void AMultiplayer_CourseCharacter::PlusPickedUp_Implementation()
 void AMultiplayer_CourseCharacter::OnGeneralButtonPressed()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Blade Power is: %f"), BladePower));
+	
+	bReplicatePickedUpItems = !bReplicatePickedUpItems;
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Replicate Pickup Items Status is: %d"), bReplicatePickedUpItems));
 }
 
 void AMultiplayer_CourseCharacter::OnRep_BladePower()
