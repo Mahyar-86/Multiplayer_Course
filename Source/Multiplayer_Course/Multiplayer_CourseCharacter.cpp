@@ -154,7 +154,7 @@ void AMultiplayer_CourseCharacter::GetLifetimeReplicatedProps(TArray<class FLife
 	//DOREPLIFETIME(ThisClass, PickedUpItems)
 	
 	DOREPLIFETIME_CONDITION(ThisClass,BladePower, COND_None)
-	DOREPLIFETIME_CONDITION(ThisClass, PickedUpItems, COND_Custom)
+	DOREPLIFETIME_CONDITION(ThisClass, PickedUpItems, COND_OwnerOnly)
 }
 
 void AMultiplayer_CourseCharacter::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
