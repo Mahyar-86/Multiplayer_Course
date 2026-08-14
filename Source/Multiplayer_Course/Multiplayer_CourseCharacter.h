@@ -8,6 +8,7 @@
 #include "Logging/LogMacros.h"
 #include "Multiplayer_CourseCharacter.generated.h"
 
+class UMP_HealthComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
@@ -107,6 +108,8 @@ public:
 	
 	virtual void PlusPickedUp_Implementation() override;
 	
+	virtual void GetHealthPotion_Implementation(float PotionEffect) override;
+	
 protected:
 	
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -130,5 +133,8 @@ private:
 	void OnRep_PickedUpItems(int32 PreviousValue);
 	
 	UPROPERTY()
-	bool bReplicatePickedUpItems = false;
+	bool bReplicatePickedUpItems = true;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UMP_HealthComponent> HealthComponent;
 };

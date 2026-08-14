@@ -31,4 +31,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void PlusPickedUp();
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void GetHealthPotion(float PotionEffect);
 };

@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Multiplayer_Course.h"
+#include "Components/MP_HealthComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AMultiplayer_CourseCharacter::AMultiplayer_CourseCharacter()
@@ -49,6 +50,8 @@ AMultiplayer_CourseCharacter::AMultiplayer_CourseCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	
+	HealthComponent = CreateDefaultSubobject<UMP_HealthComponent>("Health");
 }
 
 void AMultiplayer_CourseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -140,35 +143,6 @@ USkeletalMeshComponent* AMultiplayer_CourseCharacter::GetPlayerMesh_Implementati
 	return GetMesh();
 }
 
-void AMultiplayer_CourseCharacter::GrantBladePower_Implementation(const float Power)
-{
-	BladePower = Power;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Blade Power Granted: %f"), BladePower));
-}
-
-void AMultiplayer_CourseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	
-	//DOREPLIFETIME(ThisClass, BladePower)
-	//DOREPLIFETIME(ThisClass, PickedUpItems)
-	
-	DOREPLIFETIME_CONDITION(ThisClass,BladePower, COND_None)
-	DOREPLIFETIME_CONDITION(ThisClass, PickedUpItems, COND_OwnerOnly)
-}
-
-void AMultiplayer_CourseCharacter::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
-{
-	Super::PreReplication(ChangedPropertyTracker);
-	
-	DOREPLIFETIME_ACTIVE_OVERRIDE(ThisClass, PickedUpItems, bReplicatePickedUpItems);
-}
-
-void AMultiplayer_CourseCharacter::PlusPickedUp_Implementation()
-{
-	PickedUpItems++;
-}
-
 void AMultiplayer_CourseCharacter::OnGeneralButtonPressed()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Blade Power is: %f"), BladePower));
@@ -178,13 +152,49 @@ void AMultiplayer_CourseCharacter::OnGeneralButtonPressed()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Replicate Pickup Items Status is: %d"), bReplicatePickedUpItems));
 }
 
+void AMultiplayer_CourseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	//DOREPLIFETIME(ThisClass, BladePower)
+	//DOREPLIFETIME(ThisClass, PickedUpItems)
+	
+	DOREPLIFETIME_CONDITION(ThisClass,BladePower, COND_Custom)
+	DOREPLIFETIME_CONDITION(ThisClass, PickedUpItems, COND_Custom)
+}
+
+void AMultiplayer_CourseCharacter::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
+{
+	Super::PreReplication(ChangedPropertyTracker);
+	
+	DOREPLIFETIME_ACTIVE_OVERRIDE(ThisClass, PickedUpItems, bReplicatePickedUpItems);
+}
+
+void AMultiplayer_CourseCharacter::GrantBladePower_Implementation(const float Power)
+{
+	BladePower = Power;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Blade Power Granted: %f"), BladePower));
+}
+
+void AMultiplayer_CourseCharacter::PlusPickedUp_Implementation()
+{
+	PickedUpItems++;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Picked Up! Total %d"), PickedUpItems));
+}
+
+void AMultiplayer_CourseCharacter::GetHealthPotion_Implementation(float PotionEffect)
+{
+	HealthComponent->SetHealth(HealthComponent->GetHealth() + PotionEffect);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Potion Picked Up! Health: %f"), HealthComponent->GetHealth()));
+}
+
+
 void AMultiplayer_CourseCharacter::OnRep_BladePower()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Rep Notified Blade Power is: %f"), BladePower));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("REPNOTIFY Blade Power is: %f"), BladePower));
 }
 
 void AMultiplayer_CourseCharacter::OnRep_PickedUpItems(int32 PreviousValue)
 {
-	const FString Role = HasAuthority() ? TEXT("SERVER") : TEXT("CLIENT");
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("%s Picked Up! Total: From %d to %d"), *Role, PreviousValue, PickedUpItems));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("REPNOTIFY Picked Up! Total: From %d to %d"), PreviousValue, PickedUpItems));
 }
