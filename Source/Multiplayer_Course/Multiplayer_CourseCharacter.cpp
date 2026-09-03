@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Multiplayer_CourseCharacter.h"
-#include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -11,8 +10,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Multiplayer_Course.h"
+#include "Actors/MP_Actor.h"
 #include "Components/MP_HealthComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Utilities/MP_Utilities.h"
 
 AMultiplayer_CourseCharacter::AMultiplayer_CourseCharacter()
 {
@@ -138,6 +139,13 @@ void AMultiplayer_CourseCharacter::DoJumpEnd()
 	StopJumping();
 }
 
+void AMultiplayer_CourseCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	GetWorld()->GetTimerManager().SetTimer(RPCDelayTimer, this, &AMultiplayer_CourseCharacter::OnRPCDelayTimer, 4, false);
+}
+
 USkeletalMeshComponent* AMultiplayer_CourseCharacter::GetPlayerMesh_Implementation() const
 {
 	return GetMesh();
@@ -188,7 +196,6 @@ void AMultiplayer_CourseCharacter::GetHealthPotion_Implementation(float PotionEf
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Potion Picked Up! Health: %f"), HealthComponent->GetHealth()));
 }
 
-
 void AMultiplayer_CourseCharacter::OnRep_BladePower()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("REPNOTIFY Blade Power is: %f"), BladePower));
@@ -197,4 +204,22 @@ void AMultiplayer_CourseCharacter::OnRep_BladePower()
 void AMultiplayer_CourseCharacter::OnRep_PickedUpItems(int32 PreviousValue)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("REPNOTIFY Picked Up! Total: From %d to %d"), PreviousValue, PickedUpItems));
+}
+
+void AMultiplayer_CourseCharacter::Client_PrintMessage_Implementation(const FString& Message)
+{
+	UMP_Utilities::PrintNetworkLogMessage(Message, this, 30);	
+}
+
+void AMultiplayer_CourseCharacter::OnRPCDelayTimer()
+{
+	if (HasAuthority())
+	{
+		//Client_PrintMessage("This is a message running on owning client");
+		
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		
+		GetWorld()->SpawnActor<AMP_Actor>(SpawnParams);
+	}
 }

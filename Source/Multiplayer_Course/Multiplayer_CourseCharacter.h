@@ -98,6 +98,8 @@ public:
 	
 public:
 	
+	virtual void BeginPlay() override;
+	
 	/** IMP_PlayerInteraction Implementations **/
 	virtual USkeletalMeshComponent* GetPlayerMesh_Implementation() const override;
 	virtual void GrantBladePower_Implementation(float Power) override;
@@ -137,4 +139,11 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMP_HealthComponent> HealthComponent;
+	
+	UFUNCTION(Client, Reliable)
+	void Client_PrintMessage(const FString& Message);
+	
+	FTimerHandle RPCDelayTimer;
+	
+	void OnRPCDelayTimer();
 };

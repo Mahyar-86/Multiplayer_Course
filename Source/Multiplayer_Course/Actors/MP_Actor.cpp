@@ -1,13 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MP_Actor.h"
 
+#include "Utilities/MP_Utilities.h"
 
-// Sets default values
 AMP_Actor::AMP_Actor()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
 	bNetLoadOnClient = true;
@@ -15,15 +13,17 @@ AMP_Actor::AMP_Actor()
 	SetReplicatingMovement(true);
 }
 
-// Called when the game starts or when spawned
 void AMP_Actor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		Client_PrintSomething();
+	}
 }
 
-// Called every frame
-void AMP_Actor::Tick(float DeltaTime)
+void AMP_Actor::Client_PrintSomething_Implementation()
 {
-	Super::Tick(DeltaTime);
+	UMP_Utilities::PrintNetworkLogMessage("This is Something.", this, 30);
 }
-
