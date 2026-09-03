@@ -153,11 +153,15 @@ USkeletalMeshComponent* AMultiplayer_CourseCharacter::GetPlayerMesh_Implementati
 
 void AMultiplayer_CourseCharacter::OnGeneralButtonPressed()
 {
+	/*
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Blade Power is: %f"), BladePower));
 	
 	bReplicatePickedUpItems = !bReplicatePickedUpItems;
 	
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Replicate Pickup Items Status is: %d"), bReplicatePickedUpItems));
+	*/
+	
+	Server_PrintMessage("Run it on server");
 }
 
 void AMultiplayer_CourseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -220,6 +224,11 @@ void AMultiplayer_CourseCharacter::OnRPCDelayTimer()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		
-		GetWorld()->SpawnActor<AMP_Actor>(SpawnParams);
+		GetWorld()->SpawnActor<AMP_Actor>(SpawnParams); 
 	}
+}
+
+void AMultiplayer_CourseCharacter::Server_PrintMessage_Implementation(const FString& Message)
+{
+	UMP_Utilities::PrintNetworkLogMessage(Message, this, 30);	
 }

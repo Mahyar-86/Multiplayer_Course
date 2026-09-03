@@ -14,10 +14,14 @@ class MULTIPLAYER_COURSE_API AMP_Actor : public AActor
 public:
 	AMP_Actor();
 
+	virtual void OnRep_Owner() override;
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	UFUNCTION(Client, Reliable)
 	void Client_PrintSomething();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_PrintSomething();
 };

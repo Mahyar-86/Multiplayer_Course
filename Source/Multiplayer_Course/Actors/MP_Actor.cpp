@@ -13,17 +13,29 @@ AMP_Actor::AMP_Actor()
 	SetReplicatingMovement(true);
 }
 
+void AMP_Actor::OnRep_Owner()
+{
+	Super::OnRep_Owner();
+	
+	Server_PrintSomething();
+}
+
 void AMP_Actor::BeginPlay()
 {
 	Super::BeginPlay();
 
 	if (HasAuthority())
 	{
-		Client_PrintSomething();
+		//Client_PrintSomething();
 	}
 }
 
 void AMP_Actor::Client_PrintSomething_Implementation()
 {
-	UMP_Utilities::PrintNetworkLogMessage("This is Something.", this, 30);
+	UMP_Utilities::PrintNetworkLogMessage("This is Client Something.", this, 30);
+}
+
+void AMP_Actor::Server_PrintSomething_Implementation()
+{
+	UMP_Utilities::PrintNetworkLogMessage("This is Server Something.", this, 30);
 }

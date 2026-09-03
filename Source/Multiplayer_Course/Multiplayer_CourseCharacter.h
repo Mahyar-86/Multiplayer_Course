@@ -146,4 +146,7 @@ private:
 	FTimerHandle RPCDelayTimer;
 	
 	void OnRPCDelayTimer();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_PrintMessage(const FString& Message);
 };
