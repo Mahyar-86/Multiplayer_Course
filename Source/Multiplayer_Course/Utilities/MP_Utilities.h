@@ -20,4 +20,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static void PrintActorRemoteNetRole(AActor* Actor);
+	
+	UFUNCTION(BlueprintCallable)
+	static void PrintNetworkLogMessage(const FString& Message, const AActor* Actor = nullptr, const float TimeToDisplay = 5, const FColor& Color = FColor::Black);
 };
