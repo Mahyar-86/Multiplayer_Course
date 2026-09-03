@@ -220,12 +220,19 @@ void AMultiplayer_CourseCharacter::OnRPCDelayTimer()
 	if (HasAuthority())
 	{
 		//Client_PrintMessage("This is a message running on owning client");
-		
+	/*	
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		
 		GetWorld()->SpawnActor<AMP_Actor>(SpawnParams); 
+	*/
+		Multicast_PrintMessage("This is a message to run on server and related clients.");
 	}
+}
+
+void AMultiplayer_CourseCharacter::Multicast_PrintMessage_Implementation(const FString& Message)
+{
+	UMP_Utilities::PrintNetworkLogMessage(Message, this, 30);	
 }
 
 void AMultiplayer_CourseCharacter::Server_PrintMessage_Implementation(const FString& Message)
