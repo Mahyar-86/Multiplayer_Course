@@ -152,4 +152,7 @@ private:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PrintMessage(const FString& Message);
+	
+	UFUNCTION(Remote, Reliable)
+	void Remote_PrintMessage(const FString& Message);
 };

@@ -161,7 +161,7 @@ void AMultiplayer_CourseCharacter::OnGeneralButtonPressed()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Replicate Pickup Items Status is: %d"), bReplicatePickedUpItems));
 	*/
 	
-	Server_PrintMessage("Run it on server");
+	//Server_PrintMessage("Run it on server");
 }
 
 void AMultiplayer_CourseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -210,24 +210,30 @@ void AMultiplayer_CourseCharacter::OnRep_PickedUpItems(int32 PreviousValue)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("REPNOTIFY Picked Up! Total: From %d to %d"), PreviousValue, PickedUpItems));
 }
 
-void AMultiplayer_CourseCharacter::Client_PrintMessage_Implementation(const FString& Message)
-{
-	UMP_Utilities::PrintNetworkLogMessage(Message, this, 30);	
-}
-
 void AMultiplayer_CourseCharacter::OnRPCDelayTimer()
 {
 	if (HasAuthority())
 	{
 		//Client_PrintMessage("This is a message running on owning client");
-	/*	
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		
-		GetWorld()->SpawnActor<AMP_Actor>(SpawnParams); 
-	*/
-		Multicast_PrintMessage("This is a message to run on server and related clients.");
+		/*	
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			
+			GetWorld()->SpawnActor<AMP_Actor>(SpawnParams); 
+		*/
+		//Multicast_PrintMessage("This is a message to run on server and related clients.");
+		Remote_PrintMessage("This is a remote RPC func.");
 	}
+}
+
+void AMultiplayer_CourseCharacter::Client_PrintMessage_Implementation(const FString& Message)
+{
+	UMP_Utilities::PrintNetworkLogMessage(Message, this, 30);	
+}
+
+void AMultiplayer_CourseCharacter::Server_PrintMessage_Implementation(const FString& Message)
+{
+	UMP_Utilities::PrintNetworkLogMessage(Message, this, 30);	
 }
 
 void AMultiplayer_CourseCharacter::Multicast_PrintMessage_Implementation(const FString& Message)
@@ -235,7 +241,7 @@ void AMultiplayer_CourseCharacter::Multicast_PrintMessage_Implementation(const F
 	UMP_Utilities::PrintNetworkLogMessage(Message, this, 30);	
 }
 
-void AMultiplayer_CourseCharacter::Server_PrintMessage_Implementation(const FString& Message)
+void AMultiplayer_CourseCharacter::Remote_PrintMessage_Implementation(const FString& Message)
 {
 	UMP_Utilities::PrintNetworkLogMessage(Message, this, 30);	
 }
