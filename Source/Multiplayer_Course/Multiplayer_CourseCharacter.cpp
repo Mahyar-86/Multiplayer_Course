@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Multiplayer_CourseCharacter.h"
+
+#include <string>
+
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -14,6 +17,7 @@
 #include "Components/MP_HealthComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Utilities/MP_Utilities.h"
+#include "Game/MP_GameState.h"
 
 AMultiplayer_CourseCharacter::AMultiplayer_CourseCharacter()
 {
@@ -161,7 +165,19 @@ void AMultiplayer_CourseCharacter::OnGeneralButtonPressed()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("Replicate Pickup Items Status is: %d"), bReplicatePickedUpItems));
 	*/
 	
-	Server_PrintMessage("Run it on server");
+	// Server_PrintMessage("Run it on server");
+
+	const AMP_GameState* GameState = GetWorld()->GetGameState<AMP_GameState>();
+
+	if (GameState == nullptr)
+	{
+		return;
+	}
+
+	const int32 TeamNumber = GameState->GetTeamOfPlayerController(GetController<APlayerController>());
+	const FString TeamNumberText = TeamNumber > 0 ? FString::FromInt(TeamNumber) : "NO TEAM";
+	
+	UMP_Utilities::PrintNetworkLogMessage(FString::Printf(TEXT("This character is in team: %s"), *TeamNumberText), this, 30);
 }
 
 void AMultiplayer_CourseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

@@ -19,6 +19,8 @@ public:
 	
 	virtual void StartMatch() override;
 	
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+	
 protected:
 	virtual void BeginPlay() override;
 
