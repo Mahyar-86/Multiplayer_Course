@@ -18,6 +18,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Utilities/MP_Utilities.h"
 #include "Game/MP_GameState.h"
+#include "Game/MP_PlayerState.h"
 
 AMultiplayer_CourseCharacter::AMultiplayer_CourseCharacter()
 {
@@ -207,7 +208,12 @@ void AMultiplayer_CourseCharacter::GrantBladePower_Implementation(const float Po
 void AMultiplayer_CourseCharacter::PlusPickedUp_Implementation()
 {
 	PickedUpItems++;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Picked Up! Total %d"), PickedUpItems));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Picked Up! Total %d"), PickedUpItems));
+
+	if (AMP_PlayerState* PlayerState = GetPlayerState<AMP_PlayerState>())
+	{
+		PlayerState->PickupNum += 1;
+	}
 }
 
 void AMultiplayer_CourseCharacter::GetHealthPotion_Implementation(float PotionEffect)
