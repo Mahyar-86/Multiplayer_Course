@@ -7,7 +7,10 @@
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
 #include "Multiplayer_Course.h"
+#include "Widgets/MP_PickupCountWidget.h"
 #include "Widgets/Input/SVirtualJoystick.h"
+#include "Game/MP_PlayerState.h"
+
 
 void AMultiplayer_CoursePlayerController::BeginPlay()
 {
@@ -29,7 +32,17 @@ void AMultiplayer_CoursePlayerController::BeginPlay()
 			UE_LOG(LogMultiplayer_Course, Error, TEXT("Could not spawn mobile controls widget."));
 
 		}
-
+	}
+	
+	if (IsLocalPlayerController() && PickupCountWidgetClass)
+	{
+		PickupCountWidget = CreateWidget<UMP_PickupCountWidget>(this, PickupCountWidgetClass);
+		PickupCountWidget->AddToViewport();
+	}
+	
+	if (HasAuthority() && IsLocalPlayerController())
+	{
+		OnPlayerStateInitialized();
 	}
 }
 
@@ -57,5 +70,28 @@ void AMultiplayer_CoursePlayerController::SetupInputComponent()
 				}
 			}
 		}
+	}
+}
+
+void AMultiplayer_CoursePlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	
+	OnPlayerStateInitialized();
+}
+
+void AMultiplayer_CoursePlayerController::OnPickedUpCountChanged(const int32 NewPickupCount) const
+{
+	if (PickupCountWidget)
+	{
+		PickupCountWidget->SetPickupCount(NewPickupCount);
+	}
+}
+
+void AMultiplayer_CoursePlayerController::OnPlayerStateInitialized()
+{
+	if (AMP_PlayerState* MP_PlayerState = Cast<AMP_PlayerState>(PlayerState))
+	{
+		MP_PlayerState->FOnPickedUpItems.AddUObject(this, &ThisClass::OnPickedUpCountChanged);
 	}
 }

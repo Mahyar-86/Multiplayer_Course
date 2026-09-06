@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class UUserWidget;
+class UMP_PickupCountWidget;
 
 /**
  *  Basic PlayerController class for a third person game
@@ -17,6 +18,17 @@ UCLASS(abstract)
 class AMultiplayer_CoursePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	
+public:
+	virtual void OnRep_PlayerState() override;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UMP_PickupCountWidget> PickupCountWidgetClass;
+	
+	UPROPERTY()
+	TObjectPtr<UMP_PickupCountWidget> PickupCountWidget;
+	
+	void OnPickedUpCountChanged(int32 NewPickupCount) const;
 	
 protected:
 
@@ -40,5 +52,7 @@ protected:
 
 	/** Input mapping context setup */
 	virtual void SetupInputComponent() override;
-
+	
+private:
+	void OnPlayerStateInitialized();
 };

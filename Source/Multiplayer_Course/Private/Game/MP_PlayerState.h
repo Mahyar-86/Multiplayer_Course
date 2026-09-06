@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "MP_PlayerState.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPickedUpItemsDelegate, int32);
+
 /**
  * 
  */
@@ -15,11 +17,20 @@ class MULTIPLAYER_COURSE_API AMP_PlayerState : public APlayerState
 	GENERATED_BODY()
 	
 public:
+	AMP_PlayerState();
+	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	UPROPERTY(ReplicatedUsing = "OnRep_PickupNum")
-	int32 PickupNum = 0;
+	int32 GetPickupNum() const { return PickupNum; }
+	
+	void SetPickupNum(int32 NewPickupNum);
 	
 	UFUNCTION()
 	void OnRep_PickupNum(int32 OldPickupNum) const;
+	
+	FOnPickedUpItemsDelegate FOnPickedUpItems;
+	
+private:
+	UPROPERTY(ReplicatedUsing = "OnRep_PickupNum")
+	int32 PickupNum = 0;
 };

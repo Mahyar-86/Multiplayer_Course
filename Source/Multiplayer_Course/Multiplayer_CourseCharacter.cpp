@@ -20,6 +20,7 @@
 #include "Game/MP_GameState.h"
 #include "Game/MP_PlayerState.h"
 
+
 AMultiplayer_CourseCharacter::AMultiplayer_CourseCharacter()
 {
 	// Set size for collision capsule
@@ -212,7 +213,7 @@ void AMultiplayer_CourseCharacter::PlusPickedUp_Implementation()
 
 	if (AMP_PlayerState* PlayerState = GetPlayerState<AMP_PlayerState>())
 	{
-		PlayerState->PickupNum += 1;
+		PlayerState->SetPickupNum(PlayerState->GetPickupNum() + 1);
 	}
 }
 
