@@ -9,6 +9,7 @@
 AMP_GameMode::AMP_GameMode()
 {
 	bDelayedStart = true;
+	bUseSeamlessTravel = true;
 }
 
 void AMP_GameMode::StartMatch()
